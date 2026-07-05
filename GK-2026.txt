@@ -1,0 +1,39 @@
+NHẬP MÔN HỌC MÁY 
+(INTRODUCTION TO MACHINE LEARNING)
+
+DỰ ÁN GIỮA KỲ
+
+
+Bài 1: (5 điểm) 
+Giải quyết một bài toán phân loại (classification) hoặc hồi quy (regression) trong học máy với các yêu cầu sau:
+	•	Dữ liệu được lấy từ trang UCI Machine Learning Repository (https://archive.ics.uci.edu/datasets). Dữ liệu phong phú với nhiều thuộc tính, các thuộc tính thuộc nhiều kiểu data khác nhau (numerical, categorical). Số lượng các phần tử (các dòng) càng nhiều càng tốt. Mỗi nhóm dùng chính bộ dữ liệu đã  đăng ký trước đó.
+	•	Thực hiện các bước đọc dữ liệu, chuẩn hoá dữ liệu trước khi đưa vào mô hình để học.
+	•	Sử dụng ít nhất 3 mô hình phân loại/hồi quy khác nhau. So sánh các mô hình này với các độ đo: accuracy, precision, recall, f1-score của từng class và weighted average of f1-score của toàn bộ dữ liệu. So sánh về thời gian training và thời gian testing của các mô hình này. 
+
+Bài 2: (3 điểm) 
+Feature Selection là bài toán lựa chọn các đặc trưng (feature or attribute) quan trọng và loại bỏ các đặc trưng không quan trọng hoặc dư thừa. Từ đó ta có thể xây dựng mô hình học máy hiệu quả hơn (nhanh hơn, ít tham số hơn và độ chính xác cũng tương tự hoặc thậm chí tốt hơn khi dùng toàn bộ tập feature).
+Tham khảo: https://scikit-learn.org/stable/api/sklearn.feature_selection.html 
+Hãy tìm hiểu vấn đề Feature Selection với các yêu cầu sau:
+	•	Phương pháp dựa trên Correlation. Hiện thị các đồ thị minh hoạ.
+	•	Thử nghiệm các tập feature được lựa chọn khác nhau từ phương pháp ở câu (a) cho một bài toán Phân lớp/Hồi quy và sử dụng thuật toán Linear Regression. So sánh thông qua độ đo Mean Absolute Error (MAE). 
+
+
+Bài 3 (2 điểm):  
+Viết chương trình demo, có giao diện với các yêu cầu:
+- Ngôn ngữ lập trình: Python > 3.10
+- Giao diện: streamlit;
+- Thư viện: scikit-learn, plotly...
+
+
+Hướng dẫn cách nộp bài:
+	•	File thuyết trình (ppt, canva...) ghi họ tên và mssv của tất cả các thành viên trong nhóm. Slide thuyết trình cần có các nội dung cụ thể sau:
+- Tên dataset + các thành viên trong nhóm;
+- Miêu tả bộ dữ liệu: gồm nguồn gốc bộ dữ liệu, các trường dữ liệu…
+- Trình bày các mô hình (sơ lược) dùng trong thực nghiệm;
+- Trình bày kết quả câu 1;
+- Trình bày phương pháp chọn đặc trưng (câu 2);
+- Demo ứng dụng.
+	•	Source code  
+	•	Các file dữ liệu 
+
+* Nén tất cả thành 1 tập tin duy nhất và 1 sinh viên đại diện nhóm nộp. Quy ước đặt tên: <MSSV1>_<MSSV2>_<MSSV3>.zip.
