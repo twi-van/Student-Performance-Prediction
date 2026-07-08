@@ -108,6 +108,7 @@ class Statistics:
             f"**{len(self.categorical_cols)}** categorical columns, "
             f"**{self.df.shape[0]}** rows in total."
         )
+
     # 3. MISSING VALUES
     def _render_missing_values(self):
         st.subheader("Missing values")
@@ -167,46 +168,57 @@ class Statistics:
         fig_corr_bar.update_layout(height=600, yaxis={"categoryorder": "total ascending"}, showlegend=False)
         st.plotly_chart(fig_corr_bar, use_container_width=True)
 
-    # 6. FEATURE SELECTION + LINEAR REGRESSION MAE 
+        # Correlation heatmap - top 10 attributes most correlated with G3
+        # (computed on the full encoded dataset, G1/G2 included)
+        target = "G3"
+        corr_full = enc_df.corr(numeric_only=True)
+        corr_target_full = corr_full[target].drop(target).sort_values(key=lambda s: s.abs(), ascending=False)
+
+        top10_feats = corr_target_full.head(10).index.tolist()
+        sub_corr = enc_df[top10_feats + [target]].corr(numeric_only=True)
+        fig_top10 = px.imshow(
+            sub_corr, color_continuous_scale="RdBu_r", zmin=-1, zmax=1, text_auto=".2f",
+            title="Correlation heatmap - top 10 attributes most correlated with G3",
+        )
+        fig_top10.update_layout(height=550)
+        st.plotly_chart(fig_top10, use_container_width=True)
+
+    # 6. FEATURE SELECTION + LINEAR REGRESSION MAE - Task 2 (Member 2 - Cau2.py)
     def _render_mae_comparison(self):
         st.subheader("Feature selection & MAE comparison (Linear Regression)")
         st.markdown(
             """
-            This analysis compares the performance of **Linear Regression** using
-            different feature sets selected according to their correlation with
-            the target variable (**G3**). Features **G1** and **G2** are excluded
-            to prevent data leakage.
-
-            Model performance is evaluated using **Mean Absolute Error (MAE)**,
-            where a lower MAE indicates more accurate predictions.
+            This section compares **Linear Regression** across five correlation-based
+            feature sets. Performance is measured using **Mean Absolute Error (MAE)**,
+            where lower values indicate better prediction accuracy.
             """
         )
 
-        # --- 1. Same preprocessing as Cau2.py ---
+        # --- 1. Correlation with G3 on the full encoded dataset (G1, G2
+        # included), same as the original script ---
         enc_df = self._encoded_df()
-        X_encoded = enc_df.drop(columns=["G1", "G2", "G3"])
-        y = enc_df["G3"]
+        target = "G3"
+        X_all = enc_df.drop(columns=[target])
+        y = enc_df[target]
 
-        # Correlation computed the same way as Cau2.py: only on X_encoded + G3
-        # (G1/G2 excluded here too, so they can never leak into a feature set)
-        corr_data = X_encoded.copy()
-        corr_data["G3"] = y
-        corr_with_target = corr_data.corr(numeric_only=True)["G3"].drop("G3")
-        abs_corr = corr_with_target.abs()
+        corr = enc_df.corr(numeric_only=True)
+        corr_target = corr[target].drop(target).sort_values(key=lambda s: s.abs(), ascending=False)
 
+        # --- 2. Feature sets, same as the original script ---
         feature_sets = {
-            "All features (Full)": list(X_encoded.columns),
-            "High correlation (|corr| >= 0.10)": abs_corr[abs_corr >= 0.10].index.tolist(),
-            "Top 5 strongest-correlated features": abs_corr.sort_values(ascending=False).head(5).index.tolist(),
-            "Low correlation (|corr| < 0.05) - strong features removed": abs_corr[abs_corr < 0.05].index.tolist(),
+            "All features (Full)": X_all.columns.tolist(),
+            "Top 10 highest correlation": corr_target.head(10).index.tolist(),
+            "Top 5 highest correlation": corr_target.head(5).index.tolist(),
+            "Threshold |corr| > 0.1": corr_target[corr_target.abs() > 0.1].index.tolist(),
+            "Threshold |corr| > 0.2": corr_target[corr_target.abs() > 0.2].index.tolist(),
         }
 
-        # --- 2. Linear Regression + MAE for each feature set ---
+        # --- 3. Linear Regression + MAE for each feature set ---
         results = []
         for set_name, cols in feature_sets.items():
             if len(cols) == 0:
                 continue
-            X_sub = X_encoded[cols]
+            X_sub = X_all[cols]
             X_train, X_test, y_train, y_test = train_test_split(
                 X_sub, y, test_size=0.2, random_state=42
             )
@@ -238,7 +250,7 @@ class Statistics:
             for name, cols in feature_sets.items():
                 st.markdown(f"**{name}** ({len(cols)} features): {', '.join(cols) if cols else '—'}")
 
-        # --- 3. Plotly bar chart
+        # --- 4. Plotly bar chart ---
         fig_mae = px.bar(
             results_df, x="Feature set", y="MAE",
             color="MAE", color_continuous_scale="Greens_r",
